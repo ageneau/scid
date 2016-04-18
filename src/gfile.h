@@ -77,11 +77,14 @@ public:
     void     FlushAll ()  { Flush (&CurrentBlock); }
     
     errorT   AddGame (ByteBuffer * bb, uint * offset);
+
+#ifndef SWIG
     FastGame ReadGame (uint offset, uint length) {
         const byte* b = read_(offset, length);
         if (b == 0) length = 0; //Error
         return FastGame::Create(b, b+length);
     }
+#endif
     errorT   ReadGame (ByteBuffer * bb, uint offset, uint length) {
         const byte* b = read_(offset, length);
         if (b == 0) return ERROR_FileRead;

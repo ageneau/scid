@@ -20,7 +20,9 @@
 #define SCID_UI__H
 
 #include "misc.h"
-#ifndef CHECKUIDEP
+#if defined(NODEJS)
+#include "ui_nodejs.h"
+#elif !defined(CHECKUIDEP)
 #include "ui_tcltk.h"
 #else
 //Dummy functions useful to catch unwanted dependencies
@@ -162,8 +164,8 @@ inline UI_res_t UI_Result(UI_handle_t ti, errorT res, const T& value) {
  */
 class UI_List : public UI_impl::List {
 public:
-	explicit UI_List(size_t max_size)
-	: UI_impl::List(max_size) {
+	explicit UI_List(UI_handle_t args)
+	: UI_impl::List(args) {
 	}
 
 	/**

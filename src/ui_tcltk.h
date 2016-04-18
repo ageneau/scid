@@ -23,6 +23,7 @@
 #include <tcl.h>
 #include <sstream>
 #include <limits>
+#include <vector>
 
 namespace UI_impl {
 
@@ -106,34 +107,30 @@ inline Progress CreateProgressPosMask(UI_handle_t data) {
 
 
 class List {
-	Tcl_Obj** list_;
+    std::vector<Tcl_Obj*> list_;
 	int i_;
-	Tcl_Obj* stackBuf_[6];
 
 	friend Tcl_Obj* ObjMaker(const List&);
 
 public:
-	explicit List(size_t max_size)
-	: list_(stackBuf_), i_(0) {
-		const size_t stackBuf_size = sizeof(stackBuf_)/sizeof(stackBuf_[0]);
-		if (max_size > stackBuf_size) {
-			list_ = new Tcl_Obj*[max_size];
-		}
+	explicit List(UI_handle_t args)
+	: i_(0) {
 	}
 
 	~List() {
 		clear();
-		if (list_ != stackBuf_) delete [] list_;
 	}
 
 	void clear() {
 		for (int i=0; i < i_; i++) Tcl_DecrRefCount(list_[i]);
 		i_ = 0;
+        list_.clear();
 	}
 
 	void push_back(Tcl_Obj* value) {
 		ASSERT(value != 0);
-		list_[i_++] = value;
+		list_.push_back(value);
+        i_++;
 	}
 	template <typename T>
 	void push_back(const T& value);
@@ -163,7 +160,7 @@ inline Tcl_Obj* ObjMaker(const std::string& s) {
 	return Tcl_NewStringObj(s.c_str(), s.length());
 }
 inline Tcl_Obj* ObjMaker(const List& v) {
-	Tcl_Obj* res = Tcl_NewListObj(v.i_, v.list_);
+	Tcl_Obj* res = Tcl_NewListObj(v.i_, v.list_.data());
 	const_cast<List&>(v).i_ = 0;
 	return res;
 }

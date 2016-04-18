@@ -77,7 +77,7 @@ UI_res_t sc_base_compact(scidBaseT* dbase, UI_handle_t ti, int argc, const char*
 	} else if (argc == 4 && std::strcmp("stats", argv[3]) == 0) {
 		uint n_deleted, n_unused, n_sparse, n_badNameId;
 		errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
-		UI_List val(4);
+		UI_List val(ti);
 		val.push_back(n_deleted);
 		val.push_back(n_unused);
 		val.push_back(n_sparse);
@@ -247,8 +247,8 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		return UI_Result(ti, err);
 	}
 
-	UI_List res (count * 3);
-	UI_List ginfo(24);
+	UI_List res(ti);
+	UI_List ginfo(ti);
 	const NameBase* nb = dbase->getNameBase();
 	for (uint i = 0; i < count; ++i) {
 		uint idx = idxList[i];
@@ -363,7 +363,7 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char**
 
 	if (err != OK) return UI_Result(ti, err);
 
-	UI_List res(2);
+	UI_List res(ti);
 	res.push_back(gamesSeen);
 	res.push_back(errorMsg);
 	return UI_Result(ti, OK, res);
@@ -379,7 +379,7 @@ UI_res_t sc_base_list(UI_handle_t ti, int argc, const char** argv)
 	if (argc != 2) return UI_Result(ti, ERROR_BadArg, usage);
 
 	std::vector<int> l = DBasePool::getHandles();
-	UI_List res(l.size());
+	UI_List res(ti);
 	for (size_t i=0, n=l.size(); i < n; i++) res.push_back(l[i]);
 	return UI_Result(ti, OK, res);
 }
@@ -496,7 +496,7 @@ UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const c
 
 	const char* subcmd = argv[3];
 	const scidBaseT::Stats& stats = dbase->getStats();
-	UI_List res(6);
+	UI_List res(ti);
 
 	enum { OPT_DATE, OPT_ECO, OPT_FLAG, OPT_FLAGS, OPT_RATINGS, OPT_RESULTS };
 	const char * options[] = { "dates", "eco", "flag", "flags", "ratings", "results", NULL };
@@ -647,8 +647,8 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 
 	char buf_date[16];
 	const NameBase* nb = dbase->getNameBase();
-	UI_List res(std::distance(it, it_end));
-	UI_List tourney(14);
+	UI_List res(ti);
+	UI_List tourney(ti);
 	for (; it != it_end; it++) {
 		tourney.clear();
 		date_DecodeToString(it->getStartDate(), buf_date);
